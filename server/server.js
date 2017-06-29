@@ -16,16 +16,20 @@ module.exports = () => {
     const App = Express();
 
     // Middleware
+    App.use(Express.static(Path.join(__dirname, "..", "public")));
     App.use(CookieParser());
     App.use(BodyParser.json());
     App.use(BodyParser.urlencoded({ extended: false }));
     App.use(Passport.initialize());
 
-    // Test Route
-    App.get("/test/:id", (req, res) => res.send(req.params.id));
-
     // API Routes
     App.use("/api/user", require("./routes/user.api.js"));
+    App.use("/api/poll", require("./routes/poll.api.js"));
+
+    // Client Side Routing
+    App.use("*", (req, res) => {
+        res.sendFile(Path.join(__dirname, "..", "public", "index.html"));
+    });
 
     // Listen
     const Server = App.listen(process.env.PORT || 3000, () => {

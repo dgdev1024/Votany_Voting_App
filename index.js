@@ -14,9 +14,6 @@ Mongoose.Promise = global.Promise;
 // Environment Variables
 LoadEnv(".env");
 
-// Generate a JWT secret.
-process.env.JWT_SECRET = UUID.v4();
-
 // Connect to Database.
 Mongoose.connect(process.env.DB_URL)
     .then(require("./server/server.js"))

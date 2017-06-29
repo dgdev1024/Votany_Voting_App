@@ -27,7 +27,7 @@ module.exports = {
 
         // Make sure the screen name is within the allowed length.
         if (screenName.length < 6 || screenName.length > 20) {
-            return "Screen names must be between 6 and 20.";
+            return "Screen names must be between 6 and 20 characters in length.";
         }
 
         // Make sure the screen name doesn't contain any symbols.

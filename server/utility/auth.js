@@ -14,7 +14,7 @@ module.exports = {
     jwtAuthenticator: ExpressJWT({
         secret: process.env.JWT_SECRET,
         userProperty: "payload",
-        credentialsRequired: false
+        credentialsRequired: false  
     }),
 
     ///
@@ -30,7 +30,7 @@ module.exports = {
         if (!request.payload || !request.payload._id) {
             return callback({
                 status: 401,
-                message: "You are not logged in."
+                message: "You need to be logged in to use this feature."
             });
         }
 
@@ -40,13 +40,22 @@ module.exports = {
             if (err) {
                 return callback({
                     status: 500,
-                    message: "Error searching database. Try again later."
+                    message: "Due to an error on our side, we were unable to check your login status. Try again later."
+                });
+            }
+
+            // Was the user found?
+            if (!user || user.verified === false) {
+                return callback({
+                    status: 401,
+                    message: "Your login token has expired. You need to log in again."
                 });
             }
 
             // Found the user.
             return callback(null, {
-                message: `You are logged in as ${user.screenName}.`
+                message: `You are logged in as ${user.screenName}.`,
+                screenName: user.screenName
             });
         });
     },

@@ -34,7 +34,7 @@ module.exports = {
         ///
         accountVerification: options => {
             // The verification URL.
-            const url = `${process.env.SITE_URL}/api/user/verify/${options.verifyId}`;
+            const url = `${process.env.SITE_URL}/user/verify/${options.verifyId}`;
 
             // The email's sender, subject, and body.
             const sender = `${process.env.SITE_AUTHOR} <${process.env.EMAIL_ADDRESS}>`;

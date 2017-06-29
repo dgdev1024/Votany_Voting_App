@@ -64,6 +64,7 @@ module.exports = {
                 let user = new UserModel();
                 user.screenName = parameters.screenName;
                 user.emailAddress = parameters.emailAddress;
+                user.loginStrategy = "local";
                 user.setPassword(parameters.password);
                 user.generateVerifyId();
 
@@ -191,6 +192,14 @@ module.exports = {
                         return next({
                             status: 404,
                             message: "User not found."
+                        });
+                    }
+
+                    // Is the user logging in with a local login strategy?
+                    if (user.loginStrategy !== "local") {
+                        return next({
+                            status: 409,
+                            message: "This account is not using a local login strategy."
                         });
                     }
 

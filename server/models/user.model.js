@@ -31,7 +31,13 @@ const UserSchema = new Mongoose.Schema({
     verifyExpiry: { type: Date, default: Date.now, expires: 600 },
 
     // Also record the date the user registered.
-    registerDate: { type: Date, default: Date.now }
+    registerDate: { type: Date, default: Date.now },
+
+    // The strategy used to log in.
+    loginStrategy: {
+        type: String,
+        required: true
+    }
 });
 
 ///
