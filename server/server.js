@@ -31,6 +31,35 @@ module.exports = () => {
         res.sendFile(Path.join(__dirname, "..", "public", "index.html"));
     });
 
+    // Unauthorized Error Handling
+    App.use((err, req, res, next) => {
+        if (err.name === "UnauthorizedError") {
+            return res.status(401).json({
+                error: {
+                    status: 401,
+                    message: "Your login session has been invalidated. Please log in again."
+                }
+            });
+        } else {
+            next(err);
+        }
+    });
+
+    // Other Error Handling
+    App.use((err, req, res, next) => {
+        let error = {
+            status: 500,
+            message: "An internal server error has occured."
+        };
+
+        if (process.env.NODE_ENV === "development") {
+            error.stack = err.stack;
+            console.log(error);
+        }
+
+        return res.status(500).json({ error: error });
+    });
+
     // Listen
     const Server = App.listen(process.env.PORT || 3000, () => {
         console.log(`${process.env.SITE_TITLE} is now listening on port #${Server.address().port}...`);

@@ -8,6 +8,7 @@ const Waterfall         = require("async").waterfall;
 const Mongoose          = require("mongoose");
 const Passport          = require("passport");
 const UserModel         = require("../models/user.model.js");
+const PollModel         = require("../models/poll.model.js");
 const ResetTokenModel   = require("../models/pwtoken.model.js");
 const Email             = require("../utility/email.js");
 const Validate          = require("../utility/validate.js");
@@ -506,6 +507,89 @@ module.exports = {
             // Password changed.
             return callback(null, {
                 message: "Your password has been changed."
+            });
+        });
+    },
+
+    ///
+    /// \fn     viewProfile
+    /// \brief  Views a user's profile.
+    ///
+    /// \param  screenName          The user's screen name.
+    /// \param  callback            A function to run when this function finishes.
+    ///
+    viewProfile: (screenName, callback) => {
+        Waterfall([
+            // Find the user in the database.
+            next => {
+                UserModel.findOne({ screenName: screenName }, (err, user) => {
+                    // Any errors finding the user?
+                    if (err) {
+                        return next({
+                            status: 500,
+                            message: "Error searching user database. Try again later."
+                        });
+                    }
+
+                    // Was the user found in the database? If so, is the account verified?
+                    if (!user || user.verified === false) {
+                        return next({
+                            status: 404,
+                            message: "Verified user not found."
+                        });
+                    }
+
+                    // Send the user object to the next function.
+                    next(null, user);
+                });
+            },
+
+            // Fetch all of the polls created by the user.
+            (user, next) => {
+                PollModel.find({ author: user.screenName }, (err, polls) => {
+                    // Errors searching for polls?
+                    if (err) {
+                        return next({
+                            status: 500,
+                            message: "Error searching polls database. Try again later."
+                        });
+                    }
+
+                    // Send the user object, and the array of polls to the next function.
+                    return next(null, user, polls);
+                });
+            },
+
+            // Set everything up for return.
+            (user, polls, next) => {
+                // Sort our polls by post date starting from most recent, then
+                // map them out.
+                let mapped = polls.sort((a, b) => {
+                    return b.postDate.getTime() - a.postDate.getTime()
+                }).map(val => {
+                    return {
+                        pollId: val._id.toString(),
+                        issue: val.issue,
+                        postDate: val.postDate
+                    };
+                });
+
+                // Done.
+                return next(null, {
+                    screenName: user.screenName,
+                    emailAddress: user.emailAddress,
+                    joinDate: user.registerDate,
+                    polls: mapped
+                });
+            }
+        ], (err, profile) => {
+            // Any errors?
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, {
+                profile: profile
             });
         });
     }

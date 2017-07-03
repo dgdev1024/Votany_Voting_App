@@ -4,7 +4,11 @@
   "description": "A full-stack web application for creating and voting on polls.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-dev": "webpack -d",
+    "build": "webpack -p",
+    "bnr-dev": "npm run build-dev && npm start",
+    "bnr": "npm run build && npm start",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

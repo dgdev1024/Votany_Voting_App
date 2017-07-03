@@ -46,7 +46,7 @@ Router.get("/:pollId", (req, res) => {
             return res.status(err.status).json({ error: err });
         }
 
-        return res.status(200).json(poll);
+        return res.status(200).json({ poll: poll });
     });
 });
 

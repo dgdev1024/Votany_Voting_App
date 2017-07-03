@@ -98,10 +98,10 @@ module.exports = {
                     }
 
                     // All done.
-                    return next(null);
+                    return next(null, poll._id.toString());
                 });
             }
-        ], err => {
+        ], (err, id) => {
             // Any errors posting the poll?
             if (err) {
                 return callback(err);
@@ -109,7 +109,8 @@ module.exports = {
 
             // Done.
             return callback(null, {
-                message: "Your poll has been posted!"
+                message: "Your poll has been posted!",
+                pollId: id
             });
         });
     },
@@ -145,6 +146,7 @@ module.exports = {
                 pollId: poll._id.toString(),
                 issue: poll.issue,
                 author: poll.author,
+                postDate: poll.postDate,
                 totalVotes: poll.totalVotes,
                 choices: poll.choices.map((choice, index) => {
                     return { index: index, body: choice.body, votes: choice.votes }
