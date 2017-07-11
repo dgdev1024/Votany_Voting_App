@@ -22,12 +22,6 @@ export const FetchPoll = {
     FAILED: "FETCH_POLL_FAILED"
 };
 
-export const UpdatePoll = {
-    STARTED: "UPDATE_POLL_STARTED",
-    SUCCESS: "UPDATE_POLL_SUCCESS",
-    FAILED: "UPDATE_POLL_FAILED"
-};
-
 export const CastVote = {
     STARTED: "CAST_VOTE_STARTED",
     SUCCESS: "CAST_VOTE_SUCCESS",
@@ -98,33 +92,6 @@ function fetchPollFailed (message) {
         fetching: false,
         fetched: false,
         message
-    };
-}
-
-// Update Poll
-function updatePollStarted () {
-    return {
-        type: UpdatePoll.STARTED,
-        updating: true,
-        updated: false
-    };
-}
-
-function updatePollSuccess (message) {
-    return {
-        type: UpdatePoll.SUCCESS,
-        updating: false,
-        updated: true,
-        message
-    };
-}
-
-function updatePollFailed (message) {
-    return {
-        type: UpdatePoll.FAILED,
-        updating: false,
-        updated: false,
-        message  
     };
 }
 
@@ -220,7 +187,7 @@ export function createPoll (details) {
             choices: details.choices
         }, {
             headers: {
-                "Authorization": `Bearer ${details.jwt}`
+                "Authorization": details.jwt ? `Bearer ${details.jwt}` : ""
             }
         }).then(response => {
             const { message, pollId } = response.data;
@@ -245,7 +212,12 @@ export function fetchPoll (pollId) {
     return dispatch => {
         dispatch(fetchPollStarted());
 
-        Axios.get(`api/poll/${pollId}`)
+        const token = getLoginToken();
+        Axios.get(`api/poll/${pollId}`, {
+            headers: {
+                "Authorization": token ? `Bearer ${token.rawToken}` : ""
+            }
+        })
             .then(response => {
                 const { poll } = response.data;
 
@@ -259,36 +231,6 @@ export function fetchPoll (pollId) {
                 dispatch(push("/"));
             });
     };
-}
-
-export function updatePoll (details) {
-    return dispatch => {
-        dispatch(updatePollStarted());
-
-        Axios.put(`/api/poll/update/${details.pollId}`, {
-            issue: details.issue,
-            choices: details.choices
-        }, {
-            headers: {
-                "Authorization": `Bearer ${details.jwt}`
-            }
-        }).then(response => {
-            const { message } = response.data;
-
-            dispatch(updatePollSuccess(message));
-            dispatch(deployFlash(message, [], FlashType.OK));
-            dispatch(push(`/poll/${details.pollId}`));
-        }).catch(err => {
-            const { status, message, details } = err.response.data.error;
-
-            dispatch(updatePollFailed(message));
-            dispatch(deployFlash(message, details, FlashType.ERROR));
-
-            if (status === 401) {
-                dispatch(push("/user/login"));
-            }
-        });
-    }
 }
 
 export function castVote (details) {

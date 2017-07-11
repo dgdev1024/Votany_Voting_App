@@ -1,0 +1,84 @@
+.vta-form {
+    width: 620px;
+    margin: 16px auto;
+    padding: 16px;
+    box-sizing: border-box;
+    background-color: $form-bg;
+    color: $form-text;
+    border: 2px solid $form-border;
+    border-radius: 8px;
+    box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.2);
+    
+    @media #{$small-screen} {
+        width: 95%;
+    }
+
+    .vta-heading {
+        margin: 4px 0px;
+        padding-bottom: 4px;
+        border-bottom: 2px solid $form-border;
+    }
+
+    .vta-form-element {
+        padding: 4px 0px;
+
+        label {
+            display: block;
+        }
+
+        .vta-form-input {
+            width: 100%;
+            padding: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: $input-bg;
+            color: $form-text;
+            border: 1px solid $form-border;
+            border-radius: 4px;
+
+            &:hover, &:active {
+                background-color: white;
+            }
+        }
+    }
+
+    .vta-button-group {
+        width: 100%;
+        margin: 8px 0px;
+        box-sizing: border-box;
+    }
+
+    .vta-button {
+        margin-right: 8px;
+        padding: 4px 8px;
+        box-sizing: border-box;
+        font-size: 16px;
+        background-color: $input-bg;
+        color: $form-text;
+        border: 1px solid $form-border;
+        border-radius: 4px;
+
+        &:hover {
+            background-color: white;
+            cursor: pointer;
+        }
+
+        &.vta-submit {
+            background-color: $submit-button-bg;
+            color: $submit-button-text;
+
+            &:hover {
+                background-color: $submit-button-bg-hover;
+            }
+        }
+
+        &.vta-danger {
+            background-color: $danger-button-bg;
+            color: $danger-button-text;
+
+            &:hover {
+                background-color: $danger-button-bg-hover;
+            }
+        }
+    }
+}

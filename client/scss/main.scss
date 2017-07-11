@@ -1,0 +1,40 @@
+// Google Fonts
+@import url('https://fonts.googleapis.com/css?family=Carter+One|Noto+Sans');
+
+// Media Queries
+$small-screen:          "only screen and (max-width: 640px)";
+
+// Colors
+$topbar-bg:             #666666;
+$topbar-bg-hover:       #999999;
+$topbar-text:           #DDDDDD;
+$topbar-text-hover:     #FFFFFF;
+$topbar-border:         #111111;
+$flash-bg:              #DDDDDD;
+$flash-text:            #555555;
+$flash-border:          #111111;
+$flash-ok-bg:           #88DD88;
+$flash-ok-text:         #115511;
+$flash-ok-border:       #001100;
+$flash-error-bg:        #DD8888;
+$flash-error-text:      #551111;
+$flash-error-border:    #110000;
+$form-bg:               #F8ECC2;
+$form-text:             #333333;
+$form-border:           #111111;
+$input-bg:              #EEEEEE;
+$submit-button-bg:      #66EE66;
+$submit-button-bg-hover:#CCEECC;
+$submit-button-text:    #002200;
+$danger-button-bg:      #EEAAAA;
+$danger-button-bg-hover:#EECCCC;
+$danger-button-text:    #220000;
+
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: "Noto Sans", sans-serif;
+
+    @import "./topbar.scss";
+    @import "./body.scss";
+}

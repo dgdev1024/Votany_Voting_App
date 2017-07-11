@@ -75,7 +75,7 @@ function localVerifyFailed (message) {
 }
 
 // Exported Action Creators
-function localRegister (credentials) {
+export function localRegister (credentials) {
     return dispatch => {
         dispatch(localRegisterStarted());
 

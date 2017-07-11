@@ -1,6 +1,6 @@
 ///
 /// \file   changePassword.js
-/// \brief  Presents the Change Password page to the user.
+/// \brief  Presents the Change Password form to the user.
 ///
 
 // Imports
@@ -9,21 +9,13 @@ import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import {passwordChange} from "../actions/pwreset";
 
-///
-/// \class  ChangePasswordPage
-/// \brief  Presents the Change Password page to the user.
-///
 class ChangePasswordPage extends React.Component {
-    onPasswordInputChanged (ev) {
-        this.setState({
-            password: ev.target.value
-        });
+    onPasswordInput (ev) {
+        this.setState({ password: ev.target.value });
     }
 
-    onConfirmInputChanged (ev) {
-        this.setState({
-            confirm: ev.target.value
-        });
+    onConfirmInput (ev) {
+        this.setState({ confirm: ev.target.value });
     }
 
     onSubmitClicked (ev) {
@@ -46,37 +38,31 @@ class ChangePasswordPage extends React.Component {
     }
 
     render () {
-        return(
+        return (
             <div className="vta-form">
-                <h2 className="vta-heading">
-                    Change Your Password
-                </h2>
                 <form onSubmit={this.onSubmitClicked.bind(this)}>
+                    <h2 className="vta-heading">Change Your Password</h2>
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="password">
-                            New Password:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="password">New Password: </label>
+                        <input className="vta-form-input"
                                id="password"
                                type="password"
-                               onChange={this.onPasswordInputChanged.bind(this)}
                                value={this.state.password}
+                               onChange={this.onPasswordInput.bind(this)}
                                required />
                     </div>
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="confirm">
-                            Confirm Password:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="confirm">Confirm New Password: </label>
+                        <input className="vta-form-input"
                                id="confirm"
                                type="password"
-                               onChange={this.onConfirmInputChanged.bind(this)}
                                value={this.state.confirm}
+                               onChange={this.onConfirmInput.bind(this)}
                                required />
                     </div>
-                    <button className="vta-button" type="submit">
-                        Change Password
-                    </button>
+                    <div className="vta-button-group">
+                        <button className="vta-button vta-submit" type="submit">Change Password</button>
+                    </div>
                 </form>
             </div>
         );
@@ -84,13 +70,11 @@ class ChangePasswordPage extends React.Component {
 };
 
 // Exports
-export default withRouter(
-    connect(
-        null, 
-        dispatch => {
-            return {
-                passwordChange: (id, password, confirm) => dispatch(passwordChange(id, password, confirm))
-            };
-        }
-    )(ChangePasswordPage)
-);
+export default withRouter(connect(
+    null,
+    dispatch => {
+        return {
+            passwordChange: (id, password, confirm) => dispatch(passwordChange(id, password, confirm))
+        };
+    }
+)(ChangePasswordPage));

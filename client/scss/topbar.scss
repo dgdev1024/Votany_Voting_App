@@ -1,0 +1,72 @@
+.vta-topbar {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    background-color: $topbar-bg;
+    color: $topbar-text;
+    border-bottom: 2px solid $topbar-border;
+
+    .vta-topbar-brand {
+        display: inline-block;
+        padding: 8px;
+        font-family: "Carter One", serif;
+        font-size: 24px;
+        text-decoration: none;
+        color: $topbar-text;
+
+        &:hover {
+            color: $topbar-text-hover;
+            cursor: pointer;
+        }
+    }
+
+    .vta-topbar-menu-icon {
+        display: none;
+        float: none;
+
+        @media #{$small-screen} {
+            display: inline-block;
+            float: right;
+            font-size: 24px;
+            padding: 10px;
+
+            &:hover {
+                background-color: $topbar-bg-hover;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .vta-topbar-menu {
+        float: right;
+
+        @media #{$small-screen} {
+            display: none;
+
+            &.vta-topbar-toggled {
+                display: block;
+                float: none;
+            }
+        }
+
+        .vta-topbar-menu-item {
+            display: inline-block;
+            padding: 16px;
+            font-size: 16px;
+            text-decoration: none;
+            color: $topbar-text;
+
+            &:hover {
+                background-color: $topbar-bg-hover;
+            }
+
+            &.vta-topbar-no-hover:hover {
+                background-color: $topbar-bg;
+            }
+
+            @media #{$small-screen} {
+                display: block;
+            }
+        }
+    }
+}

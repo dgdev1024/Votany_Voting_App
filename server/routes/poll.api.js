@@ -38,43 +38,34 @@ Router.post("/create", Auth.jwtAuthenticator, (req, res) => {
 });
 
 // GET: Fetches a poll.
-Router.get("/:pollId", (req, res) => {
-    // Fetch the poll.
-    PollController.fetchPoll(req.params.pollId, (err, poll) => {
-        // Any errors?
-        if (err) {
-            return res.status(err.status).json({ error: err });
-        }
-
-        return res.status(200).json({ poll: poll });
-    });
-});
-
-// PUT: Updates a poll's details.
-Router.put("/update/:pollId", Auth.jwtAuthenticator, (req, res) => {
-    // This requires user authentication.
+Router.get("/:pollId", Auth.jwtAuthenticator, (req, res) => {
+    // Authentication will be performed here, but it is not required.
     Auth.testLogin(req, (err, user) => {
-        // Any errors with authentication?
-        if (err) {
+        // Any server errors?
+        if (err && err.status === 500) {
             return res.status(err.status).json({ error: err });
         }
 
-        // Attempt to update the poll.
-        PollController.updatePoll({
-            screenName: user.screenName,
-            pollId: req.params.pollId,
-            issue: req.body.issue,
-            choices: req.body.choices
-        }, (err, ok) => {
+        // Determine the identity of the voter. If that voter is a registered user, then
+        // that ID is their screen name. Otherwise, it is their client IP address.
+        let voter = "";
+        if (user) {
+            voter = user.screenName;
+        } else {
+            voter = IP(req);
+        }
+
+        // Fetch the poll.
+        PollController.fetchPoll(req.params.pollId, voter, (err, poll) => {
             // Any errors?
             if (err) {
                 return res.status(err.status).json({ error: err });
             }
 
-            // OK
-            return res.status(200).json(ok);
+            return res.status(200).json({ poll: poll });
         });
     });
+
 });
 
 // PUT: Casts a vote on a poll.

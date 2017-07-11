@@ -1,6 +1,6 @@
 ///
 /// \file   register.js
-/// \brief  Presents the register page to the user.
+/// \brief  Presents the Register page to the user.
 ///
 
 // Imports
@@ -11,22 +11,22 @@ import {localRegister} from "../actions/register";
 
 ///
 /// \class  RegisterPage
-/// \brief  Presents the local registration page to the user.
+/// \brief  Presents the register page to the user.
 ///
 class RegisterPage extends React.Component {
-    onScreenNameInputChanged (ev) {
+    onScreenNameInput (ev) {
         this.setState({ screenName: ev.target.value });
     }
 
-    onEmailAddressInputChanged (ev) {
+    onEmailAddressInput (ev) {
         this.setState({ emailAddress: ev.target.value });
     }
 
-    onPasswordInputChanged (ev) {
+    onPasswordInput (ev) {
         this.setState({ password: ev.target.value });
     }
 
-    onConfirmInputChanged (ev) {
+    onConfirmInput (ev) {
         this.setState({ confirm: ev.target.value });
     }
 
@@ -41,10 +41,19 @@ class RegisterPage extends React.Component {
         });
     }
 
+    onResetClicked () {
+        this.setState({
+            screenName: "",
+            emailAddress: "",
+            password: "",
+            confirm: ""
+        });
+    }
+
     constructor (props) {
         super(props);
 
-        this.state = {
+        this.state = { 
             screenName: "",
             emailAddress: "",
             password: "",
@@ -53,73 +62,64 @@ class RegisterPage extends React.Component {
     }
 
     render () {
+        const tooltips = {
+            screenName: `Screen names must be between 6 and 20 characters long, and may not contain symbols.`,
+            emailAddress: `Email addresses must be in the form "handle@domain". Example: "johndoe32@gmail.com"`,
+            password: `Passwords must be between 8 and 32 characters long, and must contain at least one capital letter, one number, and one symbol.`,
+            confirm: `The confirm password must match the password you input before.`
+        };
+
         return (
             <div className="vta-form">
-                <h2 className="vta-heading">Register a New User</h2>
                 <form onSubmit={this.onSubmitClicked.bind(this)}>
-                    {/* The screen name field. */}
+                    <h2 className="vta-heading">Register a New Account</h2>
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="screenName">
-                            Screen Name:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="screenName" title={tooltips.screenName}>Screen Name: </label>
+                        <input className="vta-form-input"
                                id="screenName"
                                type="text"
-                               onChange={this.onScreenNameInputChanged.bind(this)}
                                value={this.state.screenName}
+                               onChange={this.onScreenNameInput.bind(this)}
                                required />
                     </div>
-
-                    {/* The email address field. */}
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="emailAddress">
-                            Email Address:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="emailAddress" title={tooltips.emailAddress}>Email Address: </label>
+                        <input className="vta-form-input"
                                id="emailAddress"
                                type="text"
-                               onChange={this.onEmailAddressInputChanged.bind(this)}
                                value={this.state.emailAddress}
+                               onChange={this.onEmailAddressInput.bind(this)}
                                required />
                     </div>
-
-                    {/* The password field. */}
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="password">
-                            Password:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="password" title={tooltips.password}>Password: </label>
+                        <input className="vta-form-input"
                                id="password"
                                type="password"
-                               onChange={this.onPasswordInputChanged.bind(this)}
                                value={this.state.password}
+                               onChange={this.onPasswordInput.bind(this)}
                                required />
                     </div>
-
-                    {/* The confirm password field. */}
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="confirm">
-                            Confirm Password:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="confirm" title={tooltips.confirm}>Confirm Password: </label>
+                        <input className="vta-form-input"
                                id="confirm"
                                type="password"
-                               onChange={this.onConfirmInputChanged.bind(this)}
                                value={this.state.confirm}
+                               onChange={this.onConfirmInput.bind(this)}
                                required />
                     </div>
-
-                    {/* The submit button */}
-                    <button className="vta-submit" type="submit">
-                        Submit
-                    </button>
+                    <div className="vta-button-group">
+                        <button className="vta-button vta-submit" type="submit">Register</button>
+                        <button className="vta-button vta-danger" onClick={this.onResetClicked.bind(this)}>Reset</button>
+                    </div>
                 </form>
             </div>
         );
     }
 };
 
-// Export
+// Exports
 export default withRouter(
     connect(
         null,
@@ -128,5 +128,5 @@ export default withRouter(
                 localRegister: credentials => dispatch(localRegister(credentials))
             };
         }
-    )(RegisterPage)  
+    )(RegisterPage)
 );

@@ -71,7 +71,8 @@ module.exports = {
         passwordResetRequested: options => {
             // The link the user will need to click on in order to authenticate
             // the reset request.
-            const url = `${process.env.SITE_URL}/api/user/authenticatePasswordReset/${options.authenticateId}`;
+            const url = `${process.env.SITE_URL}/user/authenticatePasswordReset/${options.authenticateId}`;
+            const already = `${process.env.SITE_URL}/user/changePassword/${options.authenticateId}`;
 
             // The email's sender, subject, and body.
             const sender = `${process.env.SITE_AUTHOR} <${process.env.EMAIL_ADDRESS}>`;
@@ -81,6 +82,9 @@ module.exports = {
                 You are receiving this email because you have requested a password reset.<br />
                 Click on the link below to authenticate the reset request: <br />
                 <a href="${url}">${url}</a><br /><br />
+                If you have already clicked the link above to authenticate, and you need to come back later
+                to change your password, you can click the link below:<br />
+                <a href="${already}">${already}</a><br /><br />
                 If you did not make this request, then you can safely ignore this email.<br /><br />
                 Thank you for using ${process.env.SITE_TITLE}! We hope you continue enjoying this site!<br /><br />
                 - ${process.env.SITE_AUTHOR}

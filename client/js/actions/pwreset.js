@@ -138,7 +138,7 @@ export function resetAuth (authenticateId) {
 
                 dispatch(resetAuthSuccess(message));
                 dispatch(deployFlash(message, [], FlashType.OK));
-                dispatch(push("/"));
+                dispatch(push(`/user/changePassword/${authenticateId}`));
             })
             .catch(err => {
                 const { message } = err.response.data.error;
@@ -155,8 +155,8 @@ export function passwordChange (authenticateId, password, confirm) {
         dispatch(passwordChangeStarted);
 
         Axios.post(`/api/user/changePassword/${authenticateId}`, {
-            newPassword: password,
-            confirmedPassword: confirm
+            password: password,
+            confirm: confirm
         }).then(response => {
             const { message } = response.data;
 
@@ -168,7 +168,6 @@ export function passwordChange (authenticateId, password, confirm) {
 
             dispatch(passwordChangeFailed(message));
             dispatch(deployFlash(message, [], FlashType.ERROR));
-            dispatch(push("/"));
         });
     }
 }

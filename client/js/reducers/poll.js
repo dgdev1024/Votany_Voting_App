@@ -26,12 +26,6 @@ const fetchInitialState = {
     message: ""
 };
 
-const updateInitialState = {
-    updating: false,
-    updated: false,
-    message: ""
-};
-
 const voteInitialState = {
     voting: false,
     voted: false,
@@ -97,31 +91,6 @@ export function fetchReducer (state = fetchInitialState, action) {
                 fetching: action.fetching,
                 fetched: action.fetched,
                 poll: null,
-                message: action.message
-            });
-        default:
-            return state;
-    }
-}
-
-export function updateReducer (state = updateInitialState, action) {
-    switch (action.type) {
-        case UpdatePoll.STARTED:
-            return Object.assign({}, state, {
-                updating: action.updating,
-                updated: action.updated,
-                message: ""
-            });
-        case UpdatePoll.SUCCESS:
-            return Object.assign({}, state, {
-                updating: action.updating,
-                updated: action.updated,
-                message: action.message
-            });
-        case UpdatePoll.FAILED:
-            return Object.assign({}, state, {
-                updating: action.updating,
-                updated: action.updated,
                 message: action.message
             });
         default:

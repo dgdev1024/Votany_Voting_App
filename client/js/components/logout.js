@@ -1,25 +1,25 @@
 ///
-/// \file   verify.js
-/// \brief  A landing page shown while the new user is verified.
+/// \file   logout.js
+/// \brief  Landing page while the user logs out.
 ///
 
 // Imports
 import React from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {localVerify} from "../actions/register";
+import {logout} from "../actions/login";
 
 ///
-/// \class  VerifyPage
-/// \brief  Presents the verify page to the user.
+/// \class  LogoutPage
+/// \brief  Landing page while a logged in user logs out.
 ///
-class VerifyPage extends React.Component {
+class LogoutPage extends React.Component {
     constructor (props) {
         super(props);
     }
 
     componentDidMount () {
-        this.props.localVerify(this.props.match.params.verifyId);
+        this.props.logout();
     }
 
     render () {
@@ -33,8 +33,8 @@ export default withRouter(
         null,
         dispatch => {
             return {
-                localVerify: id => dispatch(localVerify(id))
+                logout: () => dispatch(logout())
             };
         }
-    )(VerifyPage)
+    )(LogoutPage)
 );

@@ -12,7 +12,10 @@ const PollChoiceSchema = new Mongoose.Schema({
     body: { type: String, required: true },
 
     // How many votes has this choice amassed?
-    votes: { type: Number, default: 0 }
+    votes: { type: Number, default: 0 },
+
+    // The list of voters that voted for this choice.
+    voters: [String]
 });
 
 // Poll Schema
@@ -50,6 +53,26 @@ PollSchema.virtual("totalVotes").get(function () {
 });
 
 ///
+/// \fn     voterVotedFor
+/// \brief  Checks to see which choice the given voter voted for.
+///
+/// \param  voter           The handle of the voting user.
+///
+/// \return The index of the choice voted for, or -1 if no vote was cast.
+///
+PollSchema.methods.voterVotedFor = function (voter) {
+    for (let i = 0; i < this.choices.length; ++i) {
+        for (const voterName of this.choices[i].voters) {
+            if (voterName === voter) {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+};
+
+///
 /// \fn     castVote
 /// \brief  Casts a vote on this poll.
 ///
@@ -74,6 +97,7 @@ PollSchema.methods.castVote = function (voter, index) {
 
     // Cast the vote.
     this.choices[index].votes += 1;
+    this.choices[index].voters.push(voter);
     this.voters.push(voter);
 
     return "OK";
@@ -103,6 +127,7 @@ PollSchema.methods.addChoice = function (voter, choice) {
     // will count as a vote on the poll.
     if (voter !== this.author) {
         this.choices.push({ body: choice, votes: 1 });
+        this.choices[this.choices.length - 1].voters.push(voter);
         this.voters.push(voter);
     } else {
         this.choices.push({ body: choice, votes: 0 });

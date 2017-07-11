@@ -17,7 +17,7 @@ import MasterReducer from "./js/reducers";
 import App from "./js/components/app";
 
 // SCSS Imports
-// ...
+import "./scss/main.scss";
 
 // Create the browser history and hook it into the router middleware.
 const browserHistory = createHistory();

@@ -95,6 +95,7 @@ export function localLogin (screenName, password) {
 
             // Dispatch our actions.
             dispatch(localLoginSuccess(message, screenName));
+            dispatch(checkLoginSuccess(message, screenName));
             dispatch(deployFlash(message, [], FlashType.OK));
             dispatch(push("/"));
         }).catch(err => {
@@ -105,6 +106,14 @@ export function localLogin (screenName, password) {
         });
     };
 };
+
+export function logout () {
+    return dispatch => {
+        clearLoginToken();
+        dispatch(checkLoginFailed("You are now logged off."));
+        dispatch(deployFlash("You are now logged off.", [], FlashType.OK));
+    };
+}
 
 export function checkLogin (redirect) {
     return dispatch => {
@@ -139,7 +148,7 @@ export function checkLogin (redirect) {
 
             if (redirect === true) {
                 dispatch(deployFlash(message, [], FlashType.ERROR));
-                dispatch(push("/login"));
+                dispatch(push("/user/login"));
             }
         });
     }

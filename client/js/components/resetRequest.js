@@ -1,6 +1,6 @@
 ///
 /// \file   resetRequest.js
-/// \brief  Presents the Password Reset Request page to the user.
+/// \brief  Presents the Password Reset Request form to the user.
 ///
 
 // Imports
@@ -11,10 +11,10 @@ import {resetRequest} from "../actions/pwreset";
 
 ///
 /// \class  ResetRequestPage
-/// \brief  Presents the Password Reset Request page to the user.
+/// \brief  Presents the Password Reset Request form to the user.
 ///
 class ResetRequestPage extends React.Component {
-    onEmailAddressInputChanged (ev) {
+    onEmailAddressInput (ev) {
         this.setState({ emailAddress: ev.target.value });
     }
 
@@ -23,43 +23,37 @@ class ResetRequestPage extends React.Component {
 
         this.props.resetRequest(this.state.emailAddress);
     }
-    
+
     constructor (props) {
         super(props);
 
-        this.state = {
-            emailAddress: ""
-        };
+        this.state = { emailAddress: "" };
     }
 
     render () {
         return (
             <div className="vta-form">
-                <h2 className="vta-heading">
-                    Request a Password Reset
-                </h2>
                 <form onSubmit={this.onSubmitClicked.bind(this)}>
+                    <h2 className="vta-heading">Request a Password Reset</h2>
                     <div className="vta-form-element">
-                        <label className="vta-label" htmlFor="emailAddress">
-                            Email Address:
-                        </label>
-                        <input className="vta-input"
+                        <label htmlFor="emailAddress">Email Address: </label>
+                        <input className="vta-form-input"
                                id="emailAddress"
                                type="text"
-                               onChange={this.onEmailAddressInputChanged.bind(this)}
                                value={this.state.emailAddress}
+                               onChange={this.onEmailAddressInput.bind(this)}
                                required />
                     </div>
-                    <button className="vta-submit" type="submit">
-                        Request Password Reset
-                    </button>
+                    <div className="vta-button-group">
+                        <button className="vta-button vta-submit" type="submit">Request</button>
+                    </div>
                 </form>
             </div>
-        )
+        );
     }
 };
 
-// Export
+// Exports
 export default withRouter(
     connect(
         null,

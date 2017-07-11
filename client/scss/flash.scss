@@ -1,0 +1,23 @@
+.vta-flash {
+    margin: 0px;
+    background-color: $flash-bg;
+    color: $flash-text;
+    border-bottom: 2px solid $flash-border;
+
+    &.vta-flash-ok {
+        background-color: $flash-ok-bg;
+        color: $flash-ok-text;
+        border-bottom-color: $flash-ok-border;
+    }
+
+    &.vta-flash-error {
+        background-color: $flash-error-bg;
+        color: $flash-error-text;
+        border-bottom-color: $flash-error-border;
+    }
+
+    .vta-flash-text {
+        display: block;
+        padding: 12px;
+    }
+}

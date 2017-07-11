@@ -120,9 +120,10 @@ module.exports = {
     /// \brief  Fetches the statistics on a poll.
     ///
     /// \param  pollId              The database ID of the poll.
+    /// \param  voter               The voter viewing this poll.
     /// \param  callback            A callback function to run when this function finishes.
     ///
-    fetchPoll: (pollId, callback) => {
+    fetchPoll: (pollId, voter, callback) => {
         // Grab the poll from the database.
         PollModel.findById(pollId, (err, poll) => {
             // Any errors fetching the poll?
@@ -141,6 +142,9 @@ module.exports = {
                 });
             }
 
+            // Find out which choice the viewing user voted for, if any.
+            const votedOnChoiceIndex = poll.voterVotedFor(voter);
+
             // Return the poll as an object.
             return callback(null, {
                 pollId: poll._id.toString(),
@@ -150,123 +154,8 @@ module.exports = {
                 totalVotes: poll.totalVotes,
                 choices: poll.choices.map((choice, index) => {
                     return { index: index, body: choice.body, votes: choice.votes }
-                })
-            });
-        });
-    },
-
-    ///
-    /// \fn     updatePoll
-    /// \brief  Updates general details of the given poll.
-    ///
-    /// The options object here contains the following:
-    /// "screenName" is the screen name of the updating user, for authentication purposes.
-    /// "pollId" is the ID of the poll to be updated.
-    /// "issue" is the newly-updated issue for this poll.
-    /// "choices" is the updated array of poll choices.
-    ///
-    /// \param  options         The options object.
-    /// \param  callback        A function to run when this function finishes.
-    ///
-    updatePoll: (options, callback) => {
-        Waterfall([
-            // Find the poll in the database, and determine if the user updating
-            // it is actually the poll's author.
-            next => {
-                // Find the poll.
-                PollModel.findById(options.pollId, (err, poll) => {
-                    // Any errors looking for the poll?
-                    if (err) {
-                        return next({
-                            status: 500,
-                            message: "Error searching the poll database. Try again later."
-                        });
-                    }
-
-                    // Does the poll exist?
-                    if (!poll) {
-                        return next({
-                            status: 404,
-                            message: "Poll not found."
-                        });
-                    }
-
-                    // Is the user issuing the update actually the poll's author?
-                    if (poll.author !== options.screenName) {
-                        return next({
-                            status: 403,
-                            message: "You are not the author of this poll."
-                        });
-                    }
-
-                    // Send the poll object to the next function.
-                    return next(null, poll);
-                });
-            },
-
-            // Validate the submitted poll details.
-            (poll, next) => {
-                let validationErrors = [];
-
-                // Validate the issue.
-                if (!options.issue) {
-                    validationErrors.push("Please provide an issue.")
-                }
-
-                // Now validate the choices.
-                if (!options.choices || options.choices.length < 2) {
-                    validationErrors.push("Please provide at least two poll choices.");
-                }
-
-                // Any validation errors?
-                if (validationErrors.length > 0) {
-                    return next({
-                        status: 400,
-                        message: "Your submitted poll details do not pass validation.",
-                        details: validationErrors
-                    });
-                }
-
-                // Send the poll object to the next function.
-                return next(null, poll);
-            },
-
-            // Update the poll object.
-            (poll, next) => {
-                // Update the poll issue.
-                poll.issue = options.issue;
-
-                // Clear the poll choices object and repopulate it.
-                options.choices.forEach((choice, index) => {
-                    if (index >= poll.choices.length) {
-                        poll.choices.push({ body: choice, votes: 0 });
-                    } else {
-                        poll.choices[index].body = choice;
-                    }
-                });
-
-                // Now save the poll.
-                poll.save(err => {
-                    // Any errors saving the poll?
-                    if (err) {
-                        return next({
-                            status: 500,
-                            message: "Error updating the poll. Try again later."
-                        });
-                    }
-
-                    // Done.
-                    return next(null);
-                });
-            }
-        ], err => {
-            // Any errors?
-            if (err) {
-                return callback(err);
-            }
-
-            return callback(null, {
-                message: "Your poll has been updated!"
+                }),
+                votedFor: votedOnChoiceIndex
             });
         });
     },
