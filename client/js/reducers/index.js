@@ -12,7 +12,8 @@ import flashReducer from "./flash";
 import {loginReducer, checkLoginReducer} from "./login";
 import {registerReducer, verifyReducer} from "./register";
 import {resetRequestReducer, resetAuthReducer, passwordChangeReducer} from "./pwreset";
-import {createReducer, fetchReducer, voteReducer, choiceReducer, removeReducer} from "./poll";
+import {fetchProfileReducer} from "./profile";
+import {createReducer, fetchReducer, searchReducer, voteReducer, choiceReducer, removeReducer} from "./poll";
 
 // Lump the router reducer, and our application's reducers, into a
 // single master reducer. Export that reducer.
@@ -26,8 +27,10 @@ export default combineReducers({
     resetRequest: resetRequestReducer,
     resetAuth: resetAuthReducer,
     passwordChange: passwordChangeReducer,
+    fetchProfile: fetchProfileReducer,
     createPoll: createReducer,
     fetchPoll: fetchReducer,
+    searchPoll: searchReducer,
     voteOnPoll: voteReducer,
     addPollChoice: choiceReducer,
     removePoll: removeReducer

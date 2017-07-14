@@ -19,6 +19,32 @@
         border-bottom: 2px solid $form-border;
     }
 
+    .vta-card {
+        width: 95%;
+        margin: 8px auto;
+        padding: 8px;
+        box-sizing: border-box;
+        background-color: white;
+        box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.2);
+
+        &:hover {
+            background-color: $input-bg;
+        }
+
+        &.vta-card-no-hover:hover {
+            background-color: white;
+        }
+
+        &.vta-card-voted {
+            background-color: $flash-ok-bg;
+            color: $flash-ok-text;
+
+            &:hover {
+                background-color: $flash-ok-bg;
+            }
+        }
+    }
+
     .vta-form-element {
         padding: 4px 0px;
 
@@ -53,6 +79,7 @@
         padding: 4px 8px;
         box-sizing: border-box;
         font-size: 16px;
+        text-decoration: none;
         background-color: $input-bg;
         color: $form-text;
         border: 1px solid $form-border;
@@ -78,6 +105,15 @@
 
             &:hover {
                 background-color: $danger-button-bg-hover;
+            }
+        }
+
+        &.vta-twitter {
+            background-color: $twitter-button-bg;
+            color: white;
+
+            &:hover {
+                background-color: $twitter-button-bg-hover;
             }
         }
     }

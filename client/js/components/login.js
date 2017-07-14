@@ -7,7 +7,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {Link, withRouter} from "react-router-dom";
-import {localLogin} from "../actions/login";
+import {localLogin, checkLogin} from "../actions/login";
 
 ///
 /// \class  LoginPage
@@ -39,7 +39,15 @@ class LoginPage extends React.Component {
         };
     }
 
+    componentDidMount () {
+        this.props.checkLogin(false, true);
+    }
+
     render () {
+        if (this.props.checkingLogin) {
+            return null;
+        }
+
         return (
             <div className="vta-form">
                 <form onSubmit={this.onSubmitClicked.bind(this)}>
@@ -67,7 +75,8 @@ class LoginPage extends React.Component {
                         <button className="vta-button vta-danger" onClick={this.onResetClicked.bind(this)}>Reset</button>
                     </div>
                     <p>
-                        If you forgot your password, then <Link to="/user/requestPasswordReset">click here.</Link>
+                        If you forgot your password, then <Link className="vta-link" to="/user/requestPasswordReset">click here.</Link><br />
+                        Don't have a Votany account? <Link className="vta-link" to="/user/register">It's easy to sign up!</Link>
                     </p>
                 </form>
             </div>
@@ -78,9 +87,14 @@ class LoginPage extends React.Component {
 // Export
 export default withRouter(
     connect(
-        null,
+        state => {
+            return {
+                checkingLogin: state.checkLogin.checking
+            };
+        },
         dispatch => {
             return {
+                checkLogin: (fail, success) => dispatch(checkLogin(fail, success)),
                 localLogin: (screenName, password) => dispatch(localLogin(screenName, password))
             };
         }

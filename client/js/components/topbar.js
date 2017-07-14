@@ -35,7 +35,7 @@ class Topbar extends React.Component {
 
         return (
             <div className="vta-topbar" onMouseLeave={this.resetToggle}>
-                <Link to="/">
+                <Link to="/" onClick={this.resetToggle}>
                     <div className="vta-topbar-brand">
                         Votany
                     </div>
@@ -48,9 +48,12 @@ class Topbar extends React.Component {
                         this.props.screenName ?
                         (
                             <div>
-                                <span className="vta-topbar-menu-item vta-topbar-no-hover">
+                                <Link className="vta-topbar-menu-item" to={`/user/profile/${this.props.screenName}`} onClick={this.resetToggle}>
                                     Hello, {this.props.screenName}!
-                                </span>
+                                </Link>
+                                <Link className="vta-topbar-menu-item" to="/poll/create" onClick={this.resetToggle}>
+                                    New Poll
+                                </Link>
                                 <Link className="vta-topbar-menu-item" to="/user/logout" onClick={this.resetToggle}>
                                     Logout
                                 </Link>

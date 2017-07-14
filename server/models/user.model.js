@@ -37,7 +37,10 @@ const UserSchema = new Mongoose.Schema({
     loginStrategy: {
         type: String,
         required: true
-    }
+    },
+
+    // The screen names of the users whom this user is following
+    following: [String]
 });
 
 ///

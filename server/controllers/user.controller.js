@@ -570,12 +570,14 @@ module.exports = {
                     return {
                         pollId: val._id.toString(),
                         issue: val.issue,
-                        postDate: val.postDate
+                        postDate: val.postDate,
+                        totalVotes: val.totalVotes
                     };
                 });
 
                 // Done.
                 return next(null, {
+                    fullUrl: `${process.env.SITE_URL}/user/profile/${user.screenName}`,
                     screenName: user.screenName,
                     emailAddress: user.emailAddress,
                     joinDate: user.registerDate,

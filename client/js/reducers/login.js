@@ -54,8 +54,7 @@ export function checkLoginReducer (state = checkLoginInitialState, action) {
             return Object.assign({}, state, {
                 checking: action.checking,
                 passed: action.passed,
-                message: "",
-                screenName: ""
+                message: ""
             });
         case CheckLogin.SUCCESS:
             return Object.assign({}, state, {

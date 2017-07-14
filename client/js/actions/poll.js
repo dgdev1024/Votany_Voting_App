@@ -5,7 +5,7 @@
 
 // Imports
 import Axios from "axios";
-import {push} from "react-router-redux";
+import {replace, push} from "react-router-redux";
 import {FlashType, deployFlash} from "./flash";
 import {getLoginToken} from "../utility/jwt";
 
@@ -20,6 +20,13 @@ export const FetchPoll = {
     STARTED: "FETCH_POLL_STARTED",
     SUCCESS: "FETCH_POLL_SUCCESS",
     FAILED: "FETCH_POLL_FAILED"
+};
+
+export const SearchPolls = {
+    STARTED: "SEARCH_POLLS_STARTED",
+    SUCCESS: "SEARCH_POLLS_SUCCESS",
+    FAILED: "SEARCH_POLLS_FAILED",
+    CLEAR: "SEARCH_POLLS_CLEAR"
 };
 
 export const CastVote = {
@@ -91,6 +98,33 @@ function fetchPollFailed (message) {
         type: FetchPoll.FAILED,
         fetching: false,
         fetched: false,
+        message
+    };
+}
+
+// Search For Polls
+function searchPollsStarted () {
+    return {
+        type: SearchPolls.STARTED,
+        searching: true,
+        searched: false
+    };
+}
+
+function searchPollsSuccess (polls) {
+    return {
+        type: SearchPolls.SUCCESS,
+        searching: false,
+        searched: true,
+        polls
+    };
+}
+
+function searchPollsFailed (message) {
+    return {
+        type: SearchPolls.FAILED,
+        searching: false,
+        searched: false,
         message
     };
 }
@@ -184,7 +218,8 @@ export function createPoll (details) {
         Axios.post("/api/poll/create", {
             author: details.author,
             issue: details.issue,
-            choices: details.choices
+            choices: details.choices,
+            keywords: details.keywords
         }, {
             headers: {
                 "Authorization": details.jwt ? `Bearer ${details.jwt}` : ""
@@ -194,7 +229,7 @@ export function createPoll (details) {
 
             dispatch(createPollSuccess(message));
             dispatch(deployFlash(message, [], FlashType.OK));
-            dispatch(`/poll/${pollId}`);
+            dispatch(push(`/poll/${pollId}`));
         }).catch(err => {
             const { status, message, details } = err.response.data.error;
 
@@ -202,7 +237,7 @@ export function createPoll (details) {
             dispatch(deployFlash(message, details, FlashType.ERROR));
 
             if (status === 401) {
-                dispatch(push("/user/login"));
+                dispatch(replace("/user/login"));
             }
         });
     }
@@ -213,7 +248,7 @@ export function fetchPoll (pollId) {
         dispatch(fetchPollStarted());
 
         const token = getLoginToken();
-        Axios.get(`api/poll/${pollId}`, {
+        Axios.get(`/api/poll/${pollId}`, {
             headers: {
                 "Authorization": token ? `Bearer ${token.rawToken}` : ""
             }
@@ -228,8 +263,37 @@ export function fetchPoll (pollId) {
 
                 dispatch(fetchPollFailed(message));
                 dispatch(deployFlash(message, [], FlashType.ERROR));
-                dispatch(push("/"));
+                dispatch(replace("/"));
             });
+    };
+}
+
+export function searchPolls (query, page) {
+    return dispatch => {
+        dispatch(searchPollsStarted());
+
+        Axios.get(`/api/poll/search?q=${query}&page=${page}`)
+            .then(response => {
+                const { polls } = response.data;
+                console.log(query, page, polls);
+
+                dispatch(searchPollsSuccess(polls));
+            })
+            .catch(err => {
+                const { message } = err.response.data.error;
+
+                dispatch(searchPollsFailed(message));
+                dispatch(deployFlash(message, [], FlashType.ERROR));
+            });
+    };
+}
+
+export function clearSearchedPolls () {
+    return {
+        type: SearchPolls.CLEAR,
+        searching: false,
+        searched: false,
+        polls: []
     };
 }
 
@@ -242,18 +306,23 @@ export function castVote (details) {
             index: details.index
         }, {
             headers: {
-                "Authorization": token ? token.rawToken : ""
+                "Authorization": token ? `Bearer ${token.rawToken}` : ""
             }
         }).then(response => {
             const { message } = response.data;
 
             dispatch(castVoteSuccess(message));
             dispatch(deployFlash(message, [], FlashType.OK));
+            dispatch(fetchPoll(details.pollId));
         }).catch(err => {
             const { status, message } = err.response.data.error;
 
             dispatch(castVoteFailed(message));
             dispatch(deployFlash(message, [], FlashType.ERROR));
+            
+            if (status === 401) {
+                dispatch(replace("/user/login"));
+            }
         });
     }
 }
@@ -273,6 +342,7 @@ export function addChoice (details) {
 
             dispatch(addChoiceSuccess(message));
             dispatch(deployFlash(message, [], FlashType.OK));
+            dispatch(fetchPoll(details.pollId));
         }).catch(err => {
             const { status, message } = err.response.data.error;
 
@@ -280,7 +350,7 @@ export function addChoice (details) {
             dispatch(deployFlash(message, [], FlashType.ERROR));
 
             if (status === 401) {
-                dispatch(push("/user/login"));
+                dispatch(replace("/user/login"));
             }
         });
     };
@@ -290,7 +360,7 @@ export function removePoll (details) {
     return dispatch => {
         dispatch(removePollStarted());
 
-        Axios.delete(`/api/poll/remove/${details.pollId}`, {
+        Axios.delete(`/api/poll/delete/${details.pollId}`, {
             headers: {
                 "Authorization": `Bearer ${details.jwt}`
             }
@@ -307,7 +377,7 @@ export function removePoll (details) {
             dispatch(deployFlash(message, [], FlashType.ERROR));
 
             if (status === 401) {
-                dispatch(push("/user/login"));
+                dispatch(replace("/user/login"));
             }
         });
     };

@@ -5,6 +5,7 @@
     background-color: $topbar-bg;
     color: $topbar-text;
     border-bottom: 2px solid $topbar-border;
+    z-index: 100;
 
     .vta-topbar-brand {
         display: inline-block;

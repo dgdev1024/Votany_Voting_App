@@ -4,4 +4,13 @@
 
     @import "./flash.scss";
     @import "./form.scss";
+
+    .vta-link {
+        color: $topbar-bg;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }

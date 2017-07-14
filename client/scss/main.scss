@@ -29,12 +29,28 @@ $submit-button-text:    #002200;
 $danger-button-bg:      #EEAAAA;
 $danger-button-bg-hover:#EECCCC;
 $danger-button-text:    #220000;
+$twitter-button-bg:         #0084B4;
+$twitter-button-bg-hover:   #8884B4;
 
 body {
     margin: 0px;
     padding: 0px;
     font-family: "Noto Sans", sans-serif;
+    font-size: 16px;
 
     @import "./topbar.scss";
     @import "./body.scss";
+
+    @media #{$small-screen} {
+        font-size: 14px;
+    }
+
+    .vta-footer {
+        text-align: center;
+        font-size: 12px;
+
+        @media #{$small-screen} {
+            font-size: 10px;
+        }
+    }
 }

@@ -26,6 +26,9 @@ const PollSchema = new Mongoose.Schema({
     // The poll's post date.
     postDate: { type: Date, default: Date.now },
 
+    // The poll's keywords, space-separated.
+    keywords: String,
+
     // The issue being voted on in this poll.
     issue: { type: String, required: true },
 
@@ -44,6 +47,9 @@ const PollSchema = new Mongoose.Schema({
     // users will be identified by their IP addresses.
     voters: [String]
 });
+
+// Index the poll's keywords, for search purposes.
+PollSchema.index({ keywords: "text" });
 
 // Virtual to tally the total votes on this poll.
 PollSchema.virtual("totalVotes").get(function () {

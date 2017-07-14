@@ -112,24 +112,6 @@ Router.get("/profile/:screenName", (req, res) => {
     });
 });
 
-// GET: Views the logged-in user's profile.
-Router.get("/me", Auth.jwtAuthenticator, (req, res) => {
-    // We obviously need to be logged in here.
-    Auth.testLogin(req, (err, user) => {
-        if (err) {
-            return res.status(err.status).json({ error: err });
-        }
-
-        UerController.viewProfile(user.screenName, (err, profile) => {
-            if (err) {
-                return res.status(err.status).json({ error: err });
-            }
-
-            return res.status(200).json(profile);
-        });
-    });
-});
-
 // POST: Logs a user in locally.
 Router.post("/login", (req, res) => {
     // Let Passport handle the user's authentication.

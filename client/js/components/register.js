@@ -7,6 +7,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {checkLogin} from "../actions/login";
 import {localRegister} from "../actions/register";
 
 ///
@@ -61,7 +62,15 @@ class RegisterPage extends React.Component {
         };
     }
 
+    componentDidMount () {
+        this.props.checkLogin(false, true);
+    }
+
     render () {
+        if (this.props.checkingLogin) {
+            return null;
+        }
+
         const tooltips = {
             screenName: `Screen names must be between 6 and 20 characters long, and may not contain symbols.`,
             emailAddress: `Email addresses must be in the form "handle@domain". Example: "johndoe32@gmail.com"`,
@@ -122,9 +131,14 @@ class RegisterPage extends React.Component {
 // Exports
 export default withRouter(
     connect(
-        null,
+        state => {
+            return {
+                checkingLogin: state.checkLogin.checking
+            };
+        },
         dispatch => {
             return {
+                checkLogin: (fail, success) => dispatch(checkLogin(fail, success)),
                 localRegister: credentials => dispatch(localRegister(credentials))
             };
         }

@@ -6,6 +6,7 @@
 // Imports
 import React from "react";
 import {connect} from "react-redux";
+import {checkLogin} from "../actions/login";
 import {withRouter} from "react-router-dom";
 import {resetRequest} from "../actions/pwreset";
 
@@ -30,7 +31,15 @@ class ResetRequestPage extends React.Component {
         this.state = { emailAddress: "" };
     }
 
+    componentDidMount () {
+        this.props.checkLogin(false, true);
+    }
+
     render () {
+        if (this.props.checkingLogin) {
+            return null;
+        }
+        
         return (
             <div className="vta-form">
                 <form onSubmit={this.onSubmitClicked.bind(this)}>
@@ -56,9 +65,14 @@ class ResetRequestPage extends React.Component {
 // Exports
 export default withRouter(
     connect(
-        null,
+        state => {
+            return {
+                checkingLogin: state.checkLogin.checking
+            };
+        },
         dispatch => {
             return {
+                checkLogin: (fail, success) => dispatch(checkLogin(fail, success)),
                 resetRequest: emailAddress => dispatch(resetRequest(emailAddress))
             };
         }

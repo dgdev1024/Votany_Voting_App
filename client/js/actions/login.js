@@ -5,7 +5,7 @@
 
 // Imports
 import Axios from "axios";
-import {push} from "react-router-redux";
+import {push, replace} from "react-router-redux";
 import {FlashType, deployFlash} from "./flash";
 import {getLoginToken, saveLoginToken, clearLoginToken} from "../utility/jwt";
 
@@ -55,8 +55,7 @@ function checkLoginStarted () {
     return {
         type: CheckLogin.STARTED,
         checking: true,
-        passed: false,
-        screenName: ""
+        passed: false
     };
 }
 
@@ -75,6 +74,7 @@ function checkLoginFailed (message) {
         type: CheckLogin.FAILED,
         checking: false,
         passed: false,
+        screenName: "",
         message
     };
 }
@@ -97,7 +97,7 @@ export function localLogin (screenName, password) {
             dispatch(localLoginSuccess(message, screenName));
             dispatch(checkLoginSuccess(message, screenName));
             dispatch(deployFlash(message, [], FlashType.OK));
-            dispatch(push("/"));
+            dispatch(replace("/"));
         }).catch(err => {
             const { message, details } = err.response.data.error;
 
@@ -112,10 +112,11 @@ export function logout () {
         clearLoginToken();
         dispatch(checkLoginFailed("You are now logged off."));
         dispatch(deployFlash("You are now logged off.", [], FlashType.OK));
+        dispatch(replace("/"));
     };
 }
 
-export function checkLogin (redirect) {
+export function checkLogin (redirectOnFail, redirectOnSuccess) {
     return dispatch => {
         dispatch(checkLoginStarted());
 
@@ -124,9 +125,9 @@ export function checkLogin (redirect) {
         if (!token) {
             dispatch(checkLoginFailed("You are not logged in."));
 
-            if (redirect === true) {
+            if (redirectOnFail === true) {
                 dispatch(deployFlash("You need to be logged in to use this feature.", [], FlashType.ERROR));
-                dispatch(push("/login"));
+                dispatch(replace("/user/login"));
             }
 
             return;
@@ -141,14 +142,20 @@ export function checkLogin (redirect) {
             const { message, screenName } = response.data;
 
             dispatch(checkLoginSuccess(message, screenName));
+
+            if (redirectOnSuccess === true) {
+                dispatch(deployFlash("You need to be logged out to access this page.", [], FlashType.DEFAULT))
+                dispatch(replace("/"));
+            }
         }).catch(err => {
             const { message } = err.response.data.error;
 
+            clearLoginToken();
             dispatch(checkLoginFailed(message));
 
-            if (redirect === true) {
+            if (redirectOnFail === true) {
                 dispatch(deployFlash(message, [], FlashType.ERROR));
-                dispatch(push("/user/login"));
+                dispatch(replace("/user/login"));
             }
         });
     }

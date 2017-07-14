@@ -18,6 +18,7 @@ module.exports = {
     /// "author" is the screen name of the poll's author.
     /// "issue" is the issue the voters will be voting on.
     /// "choices" is an array of the choices the voters will vote on.
+    /// "keywords" is a string of space-separated keywords that help with searching.
     ///
     /// \param  options         The aforementioned objects object.
     /// \param  callback        A callback function to run when this function finishes.
@@ -31,6 +32,10 @@ module.exports = {
                 if (!options.issue) { validationErrors.push("Please enter an issue to vote on!"); }
                 if (!options.choices || options.choices.length < 2) {
                     validationErrors.push("Polls must have at least two choices.");
+                }
+
+                if (!options.keywords) {
+                    validationErrors.push("Please enter at least one keyword, so people can search for your poll.");
                 }
 
                 if (validationErrors.length > 0) {
@@ -81,6 +86,7 @@ module.exports = {
                 let poll = new PollModel();
                 poll.author = options.author;
                 poll.issue = options.issue;
+                poll.keywords = options.keywords.toLowerCase();
 
                 // Populate the poll's choices array.
                 options.choices.forEach(val => {
@@ -148,6 +154,7 @@ module.exports = {
             // Return the poll as an object.
             return callback(null, {
                 pollId: poll._id.toString(),
+                fullUrl: `${process.env.SITE_URL}/poll/${poll._id.toString()}`,
                 issue: poll.issue,
                 author: poll.author,
                 postDate: poll.postDate,
@@ -158,6 +165,57 @@ module.exports = {
                 votedFor: votedOnChoiceIndex
             });
         });
+    },
+
+    ///
+    /// \fn     fetchPollsByKeyword
+    /// \brief  Fetches all polls with the requested keywords.
+    ///
+    /// \param  query               The string containing our seach query.
+    /// \param  page                Which search results to show.
+    /// \param  callback            A function to run when this function finishes.
+    ///
+    fetchPollsByKeyword: (query, page, callback) => {
+        // Find all matching polls, and sort by relevance.
+        PollModel.find(
+            { $text: { $search: query }},
+            { score: { $meta: "textScore" }}
+        )
+            .sort({ score: { $meta: "textScore" }})
+            .skip(10 * page)
+            .limit(10)
+            .exec((err, polls) => {
+                // Any errors searching the database?
+                if (err) {
+                    return callback({
+                        status: 500,
+                        message: "Error searching polls database. Try again later."
+                    });
+                }
+
+                // Were polls found?
+                if (polls.length === 0) {
+                    return callback({
+                        status: 404,
+                        message: "Your search did not match any results."
+                    });
+                }
+
+                // Prepare the polls.
+                const mapped = polls.map(poll => {
+                    return {
+                        fullUrl: `${process.env.SITE_URL}/poll/${poll._id.toString()}`,
+                        pollId: poll._id.toString(),
+                        postDate: poll.postDate,
+                        issue: poll.issue,
+                        author: poll.author,
+                        votes: poll.totalVotes
+                    };
+                });
+
+                // Return them.
+                return callback(null, { polls: mapped, lastPage: polls.length < 10 });
+            });
     },
 
     ///

@@ -5,7 +5,7 @@
 
 // Imports
 import Axios from "axios";
-import {push} from "react-router-redux";
+import {push, replace} from "react-router-redux";
 import {FlashType, deployFlash} from "./flash";
 
 // Action Types
@@ -89,7 +89,7 @@ export function localRegister (credentials) {
 
             dispatch(localRegisterSuccess(message));
             dispatch(deployFlash(message, [], FlashType.OK));
-            dispatch(push("/"));
+            dispatch(replace("/"));
         }).catch(err => {
             const { message, details } = err.response.data.error;
 
@@ -109,14 +109,14 @@ export function localVerify (verifyId) {
 
                 dispatch(localVerifySuccess(message));
                 dispatch(deployFlash(message, [], FlashType.OK));
-                dispatch(push("/login"));
+                dispatch(replace("/"));
             })
             .catch(err => {
                 const { message } = err.response.data.error;
 
                 dispatch(localVerifyFailed(message));
                 dispatch(deployFlash(message, [], FlashType.ERROR));
-                dispatch(push("/"));
+                dispatch(replace("/"));
             });
     };
 }

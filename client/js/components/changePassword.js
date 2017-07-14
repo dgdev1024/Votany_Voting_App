@@ -7,6 +7,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {checkLogin} from "../actions/login";
 import {passwordChange} from "../actions/pwreset";
 
 class ChangePasswordPage extends React.Component {
@@ -35,6 +36,10 @@ class ChangePasswordPage extends React.Component {
             password: "",
             confirm: ""
         };
+    }
+
+    componentDidMount () {
+        this.props.checkLogin(false, false);
     }
 
     render () {
@@ -74,6 +79,7 @@ export default withRouter(connect(
     null,
     dispatch => {
         return {
+            checkLogin: (fail, success) => dispatch(checkLogin(fail, success)),
             passwordChange: (id, password, confirm) => dispatch(passwordChange(id, password, confirm))
         };
     }

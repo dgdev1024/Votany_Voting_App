@@ -25,7 +25,8 @@ Router.post("/create", Auth.jwtAuthenticator, (req, res) => {
         PollController.createPoll({
             author: user.screenName,
             issue: req.body.issue,
-            choices: req.body.choices
+            choices: req.body.choices,
+            keywords: req.body.keywords
         }, (err, ok) => {
             // Any error?
             if (err) {
@@ -34,6 +35,31 @@ Router.post("/create", Auth.jwtAuthenticator, (req, res) => {
 
             return res.status(200).json(ok);
         });
+    });
+});
+
+// GET: Searches for polls by keyword.
+Router.get("/search", (req, res) => {
+    if (!req.query.q) {
+        return res.status(400).json({
+            error: {
+                status: 400,
+                message: "Please enter a search term."
+            }
+        });
+    }
+
+    let page = 0;
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+    }
+    
+    PollController.fetchPollsByKeyword(req.query.q, page, (err, polls) => {
+        if (err) {
+            return res.status(err.status).json({ error: err });
+        }
+
+        return res.status(200).json(polls);
     });
 });
 

@@ -6,6 +6,7 @@
 import {
     CreatePoll,
     FetchPoll,
+    SearchPolls,
     UpdatePoll,
     CastVote,
     AddChoice,
@@ -23,6 +24,14 @@ const fetchInitialState = {
     fetching: false,
     fetched: false,
     poll: null,
+    message: ""
+};
+
+const searchInitialState = {
+    searching: false,
+    searched: false,
+    pages: 0,
+    polls: [],
     message: ""
 };
 
@@ -92,6 +101,42 @@ export function fetchReducer (state = fetchInitialState, action) {
                 fetched: action.fetched,
                 poll: null,
                 message: action.message
+            });
+        default:
+            return state;
+    }
+}
+
+export function searchReducer (state = searchInitialState, action) {
+    switch (action.type) {
+        case SearchPolls.STARTED:
+            return Object.assign({}, state, {
+                searching: action.searching,
+                searched: action.searched,
+                polls: [],
+                message: ""
+            });
+        case SearchPolls.SUCCESS:
+            return Object.assign({}, state, {
+                searching: action.searching,
+                searched: action.searched,
+                polls: action.polls,
+                pages: action.pages,
+                message: ""
+            });
+        case SearchPolls.FAILED:
+            return Object.assign({}, state, {
+                searching: action.searching,
+                searched: action.searched,
+                polls: [],
+                message: action.message
+            });
+        case SearchPolls.CLEAR:
+            return Object.assign({}, state, {
+                searching: action.searching,
+                searched: action.searched,
+                polls: [],
+                message: ""
             });
         default:
             return state;
