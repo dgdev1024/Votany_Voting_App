@@ -12,7 +12,7 @@
 ///
 module.exports = request => {
     // Try to fetch the "X-Forwarded-For" request header.
-    const forwardedFor = request.headers["X-Forwarded-For"];
+    const forwardedFor = request.headers["x-forwarded-for"];
 
     // Check to see if the header was found.
     if (forwardedFor) {
