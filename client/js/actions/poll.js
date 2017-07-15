@@ -273,7 +273,21 @@ export function searchPolls (query, page) {
     return dispatch => {
         dispatch(searchPollsStarted());
 
-        Axios.get(`/api/poll/search?q=${query}&page=${page}`)
+        if (query) {
+            Axios.get(`/api/poll/search?q=${query}&page=${page}`)
+                .then(response => {
+                    const { polls, lastPage } = response.data;
+
+                    dispatch(searchPollsSuccess(polls, lastPage));
+                })
+                .catch(err => {
+                    const { message } = err.response.data.error;
+
+                    dispatch(searchPollsFailed(message));
+                    dispatch(deployFlash(message, [], FlashType.ERROR));
+                });
+        } else {
+            Axios.get(`/api/poll/all?page=${page}`)
             .then(response => {
                 const { polls, lastPage } = response.data;
 
@@ -283,8 +297,8 @@ export function searchPolls (query, page) {
                 const { message } = err.response.data.error;
 
                 dispatch(searchPollsFailed(message));
-                dispatch(deployFlash(message, [], FlashType.ERROR));
             });
+        }
     };
 }
 

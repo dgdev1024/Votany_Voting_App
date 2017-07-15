@@ -36,14 +36,21 @@ class HomePage extends React.Component {
   
     onPrevClicked () {
         if (this.state.page > 0) {
-            this.props.history.replace(`/?search=${this.state.submittedSearch}&page=${this.state.page - 1}`);
+            if (this.state.submittedSearch) {
+                this.props.history.replace(`/?search=${this.state.submittedSearch || ""}&page=${this.state.page - 1}`);
+            } else {
+                this.props.history.replace(`/?page=${this.state.page - 1}`);
+            }
         }
     }
   
     onNextClicked () {
         if (!this.props.searchedPolls.lastPage) {
-            this.props.history.replace(`/?search=${this.state.submittedSearch}&page=${this.state.page + 1}`);
-        }
+            if (this.state.submittedSearch) {
+                this.props.history.replace(`/?search=${this.state.submittedSearch || ""}&page=${this.state.page + 1}`);
+            } else {
+                this.props.history.replace(`/?page=${this.state.page + 1}`);
+            }}
     }
 
     constructor (props) {
@@ -60,13 +67,8 @@ class HomePage extends React.Component {
         const parsed = QueryString.parse(this.props.location.search);
         this.props.checkLogin(false, false);
         
-        if (parsed.search) {
-            this.props.searchPolls(parsed.search, parseInt(parsed.page || 0));
-            this.setState({ submittedSearch: parsed.search, page: parseInt(parsed.page || 0) });
-        } else {
-            this.props.clearSearch();
-            this.setState({ submittedSearch: "", page: 0 });
-        }
+        this.props.searchPolls(parsed.search, parseInt(parsed.page || 0));
+        this.setState({ submittedSearch: parsed.search, page: parseInt(parsed.page || 0) });
     }
 
     componentWillReceiveProps (next) {
@@ -74,13 +76,8 @@ class HomePage extends React.Component {
             const parsed = QueryString.parse(next.location.search);
             this.props.checkLogin(false, false);
         
-            if (parsed.search) {
-                this.props.searchPolls(parsed.search, parseInt(parsed.page || 0));
-                this.setState({ submittedSearch: parsed.search, page: parseInt(parsed.page || 0) });
-            } else {
-                this.props.clearSearch();
-                this.setState({ submittedSearch: "", page: 0 });
-            }
+            this.props.searchPolls(parsed.search, parseInt(parsed.page || 0));
+            this.setState({ submittedSearch: parsed.search, page: parseInt(parsed.page || 0) });
         }
     }
 
@@ -108,7 +105,11 @@ class HomePage extends React.Component {
 
         return (
             <div>
-                <h2 className="vta-heading">Search Results</h2>
+                {
+                    this.state.submittedSearch ?
+                        <h2 className="vta-heading">Search Results</h2> :
+                        <h2 className="vta-heading">Latest Polls</h2>
+                }
                 <div className="vta-button-group">
                 {
                     parseInt(this.state.page) !== 0 &&

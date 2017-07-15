@@ -219,6 +219,41 @@ module.exports = {
     },
 
     ///
+    /// \fn     fetchAllPolls
+    /// \brief  Fetches all polls in the database.
+    ///
+    /// \param  page                Which polls should we show?
+    /// \param  callback            A callback function to run when this function finishes.
+    ///
+    fetchAllPolls: (page, callback) => {
+        // Fetch the polls.
+        PollModel.find({}).skip(10 * page).limit(10).exec((err, polls) => {
+            // Any errors searching the database?
+            if (err) {
+                return callback({
+                    status: 500,
+                    message: "Error searching polls database. Try again later."
+                });
+            }
+
+            // Prepare the polls.
+            const mapped = polls.map(poll => {
+                return {
+                    fullUrl: `${process.env.SITE_URL}/poll/${poll._id.toString()}`,
+                    pollId: poll._id.toString(),
+                    postDate: poll.postDate,
+                    issue: poll.issue,
+                    author: poll.author,
+                    votes: poll.totalVotes
+                };
+            });
+
+            // Return them.
+            return callback(null, { polls: mapped, lastPage: polls.length < 10 });
+        });
+    },
+
+    ///
     /// \fn     castVote
     /// \brief  Casts a vote on the poll.
     ///

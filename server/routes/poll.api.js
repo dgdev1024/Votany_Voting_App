@@ -63,6 +63,22 @@ Router.get("/search", (req, res) => {
     });
 });
 
+// GET: Fetches all polls.
+Router.get("/all", (req, res) => {
+    let page = 0;
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+    }
+    
+    PollController.fetchAllPolls(page, (err, polls) => {
+        if (err) {
+            return res.status(err.status).json({ error: err });
+        }
+
+        return res.status(200).json(polls);
+    });
+});
+
 // GET: Fetches a poll.
 Router.get("/:pollId", Auth.jwtAuthenticator, (req, res) => {
     // Authentication will be performed here, but it is not required.
