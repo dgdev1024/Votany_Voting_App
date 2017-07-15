@@ -33,12 +33,26 @@ class HomePage extends React.Component {
 
         this.props.history.replace(`/?search=${this.state.searchInput}&page=0`);
     }
+  
+    onPrevClicked () {
+        if (this.state.page > 0) {
+            this.props.history.replace(`/?search=${this.state.submittedSearch}&page=${this.state.page - 1}`);
+        }
+    }
+  
+    onNextClicked () {
+        if (!this.props.searchedPolls.lastPage) {
+            this.props.history.replace(`/?search=${this.state.submittedSearch}&page=${this.state.page + 1}`);
+        }
+    }
 
     constructor (props) {
         super(props);
 
         this.state = {
-            searchInput: ""
+            searchInput: "",
+            submittedSearch: "",
+            page: 0
         };
     }
 
@@ -47,9 +61,11 @@ class HomePage extends React.Component {
         this.props.checkLogin(false, false);
         
         if (parsed.search) {
-            this.props.searchPolls(parsed.search, parsed.page || 0);
+            this.props.searchPolls(parsed.search, parseInt(parsed.page || 0));
+            this.setState({ submittedSearch: parsed.search, page: parseInt(parsed.page || 0) });
         } else {
             this.props.clearSearch();
+            this.setState({ submittedSearch: "", page: 0 });
         }
     }
 
@@ -57,11 +73,13 @@ class HomePage extends React.Component {
         if (next.location.search !== this.props.location.search) {
             const parsed = QueryString.parse(next.location.search);
             this.props.checkLogin(false, false);
-            
+        
             if (parsed.search) {
-                this.props.searchPolls(parsed.search, parsed.page || 0);
+                this.props.searchPolls(parsed.search, parseInt(parsed.page || 0));
+                this.setState({ submittedSearch: parsed.search, page: parseInt(parsed.page || 0) });
             } else {
                 this.props.clearSearch();
+                this.setState({ submittedSearch: "", page: 0 });
             }
         }
     }
@@ -70,6 +88,8 @@ class HomePage extends React.Component {
         if (this.props.searchedPolls.length === 0) {
             return null;
         }
+      
+        console.log(this.props, this.state);
 
         const mapped = this.props.searchedPolls.map((poll, index) => {
             return (
@@ -80,7 +100,7 @@ class HomePage extends React.Component {
                         </Link>
                     </h3>
                     <p>
-                        Author: {poll.author}<br />
+                        Author: <Link className="vta-link" to={`/user/profile/${poll.author}`}>{poll.author}</Link><br />
                         Posted: {Moment(poll.postDate).format("MMMM Do YYYY, h:mm:ss a")}<br />
                         Votes: {poll.votes}
                     </p>
@@ -91,6 +111,16 @@ class HomePage extends React.Component {
         return (
             <div>
                 <h2 className="vta-heading">Search Results</h2>
+                <div className="vta-button-group">
+                {
+                    parseInt(this.state.page) !== 0 &&
+                        <button className="vta-button" onClick={this.onPrevClicked.bind(this)}>Previous</button>
+                }
+                {
+                    this.props.lastPage === false &&
+                        <button className="vta-button" onClick={this.onNextClicked.bind(this)}>Next</button>
+                }
+                </div>
                 {mapped}
             </div>
         );
@@ -138,7 +168,8 @@ export default withRouter(connect(
     state => {
         return {
             checkingLogin: state.checkLogin.checking,
-            searchedPolls: state.searchPoll.polls
+            searchedPolls: state.searchPoll.polls,
+            lastPage: state.searchPoll.lastPage
         };
     },
     dispatch => {

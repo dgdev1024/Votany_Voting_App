@@ -32,6 +32,7 @@ const searchInitialState = {
     searched: false,
     pages: 0,
     polls: [],
+    lastPage: false,
     message: ""
 };
 
@@ -114,7 +115,8 @@ export function searchReducer (state = searchInitialState, action) {
                 searching: action.searching,
                 searched: action.searched,
                 polls: [],
-                message: ""
+                message: "",
+                lastPage: false
             });
         case SearchPolls.SUCCESS:
             return Object.assign({}, state, {
@@ -122,21 +124,24 @@ export function searchReducer (state = searchInitialState, action) {
                 searched: action.searched,
                 polls: action.polls,
                 pages: action.pages,
-                message: ""
+                message: "",
+                lastPage: action.lastPage
             });
         case SearchPolls.FAILED:
             return Object.assign({}, state, {
                 searching: action.searching,
                 searched: action.searched,
                 polls: [],
-                message: action.message
+                message: action.message,
+                lastPage: false
             });
         case SearchPolls.CLEAR:
             return Object.assign({}, state, {
                 searching: action.searching,
                 searched: action.searched,
                 polls: [],
-                message: ""
+                message: "",
+                lastPage: false
             });
         default:
             return state;

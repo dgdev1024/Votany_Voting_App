@@ -71,6 +71,8 @@ class ViewProfilePage extends React.Component {
             );
         });
 
+        if (mapped.length === 0) { lastPage = true; }
+
         return (
             <div>
                 <h2 className="vta-heading">

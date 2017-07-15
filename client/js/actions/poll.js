@@ -111,12 +111,13 @@ function searchPollsStarted () {
     };
 }
 
-function searchPollsSuccess (polls) {
+function searchPollsSuccess (polls, lastPage) {
     return {
         type: SearchPolls.SUCCESS,
         searching: false,
         searched: true,
-        polls
+        polls,
+        lastPage
     };
 }
 
@@ -274,10 +275,9 @@ export function searchPolls (query, page) {
 
         Axios.get(`/api/poll/search?q=${query}&page=${page}`)
             .then(response => {
-                const { polls } = response.data;
-                console.log(query, page, polls);
+                const { polls, lastPage } = response.data;
 
-                dispatch(searchPollsSuccess(polls));
+                dispatch(searchPollsSuccess(polls, lastPage));
             })
             .catch(err => {
                 const { message } = err.response.data.error;
