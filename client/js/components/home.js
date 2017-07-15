@@ -88,8 +88,6 @@ class HomePage extends React.Component {
         if (this.props.searchedPolls.length === 0) {
             return null;
         }
-      
-        console.log(this.props, this.state);
 
         const mapped = this.props.searchedPolls.map((poll, index) => {
             return (

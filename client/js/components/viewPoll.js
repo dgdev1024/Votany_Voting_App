@@ -6,7 +6,7 @@
 // Imports
 import React from "react";
 import {connect} from "react-redux";
-import {withRouter} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {Pie as PieChart} from "react-chartjs-2";
 import {checkLogin} from "../actions/login";
 import {fetchPoll, castVote, addChoice, removePoll} from "../actions/poll";
@@ -117,6 +117,10 @@ class ViewPollPage extends React.Component {
 
         return (
             <div>
+                {
+                   isAuthor === false && this.props.poll.votedFor === -1 &&
+                     <p><em>Click on one of the cards below to select your option, then click "Cast Vote" to cast your vote.</em></p>
+                }
                 {mapped}
                 <div className="vta-button-group">
                 {
@@ -211,7 +215,10 @@ class ViewPollPage extends React.Component {
                 <h2 className="vta-heading">
                     View Poll
                 </h2>
-                <p>Issue: {this.props.poll.issue}</p>
+                <p>
+                    Issue: {this.props.poll.issue}<br />
+                    Author: <Link className="vta-link" to={`/user/profile/${this.props.poll.author}`}>{this.props.poll.author}</Link>
+                </p>
                 {this.renderChoices(
                     this.props.screenName === this.props.poll.author
                 )}
